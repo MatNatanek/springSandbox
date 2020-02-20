@@ -2,13 +2,16 @@ package com.natanek.springSandbox.controller;
 
 import com.natanek.springSandbox.exception.ResourceNotFoundException;
 import com.natanek.springSandbox.model.Instructor;
+import com.natanek.springSandbox.model.InstructorDetail;
 import com.natanek.springSandbox.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@RestController("/api/instructor")
+@RestController()
+@RequestMapping(path = "/api/instructor")
 public class InstructorController {
 
     InstructorRepository instructorRepository;
@@ -29,10 +32,30 @@ public class InstructorController {
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
     }
 
+    //Tu przydaloby sie sprawdzac czy ma jakies dane
+    @GetMapping("/{id}/detail")
+    InstructorDetail getInstructorDetailById(@PathVariable Long id) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
+        return instructor.getInstructorDetail();
+    }
+
     @PostMapping
     public Instructor saveInstructor(@RequestBody Instructor instructor){
         return instructorRepository.save(instructor);
     }
+
+    //POST czy PUT?
+    //Czy musi tu być save
+    @PostMapping("/{id}/detail")
+    Instructor saveDetailsToInstructor(@PathVariable Long id, @RequestBody InstructorDetail instructorDetail) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
+        instructor.setInstructorDetail(instructorDetail);
+        instructorRepository.save(instructor);
+        return instructor;
+    }
+
 
     @PutMapping(path ="/{id}")
     public Instructor updateInstructor(@RequestBody Instructor instructor,  @PathVariable Long id){
@@ -46,9 +69,10 @@ public class InstructorController {
     }
 
     @DeleteMapping(path ="/{id}")
-    public void deleteInstructor(@PathVariable Long id) {
+    public void deleteInstructor(@PathVariable Long id, HttpServletResponse response) {
         Instructor instructor = instructorRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
+        response.setStatus(204);
         instructorRepository.delete(instructor);
     }
 
