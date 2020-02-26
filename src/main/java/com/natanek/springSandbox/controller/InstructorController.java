@@ -1,6 +1,7 @@
 package com.natanek.springSandbox.controller;
 
 import com.natanek.springSandbox.exception.ResourceNotFoundException;
+import com.natanek.springSandbox.model.Course;
 import com.natanek.springSandbox.model.Instructor;
 import com.natanek.springSandbox.model.InstructorDetail;
 import com.natanek.springSandbox.repository.InstructorRepository;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping(path = "/api/instructor")
 public class InstructorController {
 
@@ -22,8 +23,8 @@ public class InstructorController {
     }
 
     @GetMapping
-    public List<Instructor> getInstructors(){
-        return  instructorRepository.findAll();
+    public List<Instructor> getInstructors() {
+        return instructorRepository.findAll();
     }
 
     @GetMapping("/{id}")
@@ -41,12 +42,12 @@ public class InstructorController {
     }
 
     @PostMapping
-    public Instructor saveInstructor(@RequestBody Instructor instructor){
+    public Instructor saveInstructor(@RequestBody Instructor instructor) {
         return instructorRepository.save(instructor);
     }
 
     //POST czy PUT?
-    //Czy musi tu być save
+    //Czy musi tu być save //Chyba musi byc bo nie ma transactional -> z Transactional tez nie dziala, dlaczego?
     @PostMapping("/{id}/detail")
     Instructor saveDetailsToInstructor(@PathVariable Long id, @RequestBody InstructorDetail instructorDetail) {
         Instructor instructor = instructorRepository.findById(id)
@@ -57,18 +58,19 @@ public class InstructorController {
     }
 
 
-    @PutMapping(path ="/{id}")
-    public Instructor updateInstructor(@RequestBody Instructor instructor,  @PathVariable Long id){
+    @PutMapping(path = "/{id}")
+    public Instructor updateInstructor(@RequestBody Instructor instructor, @PathVariable Long id) {
         Instructor ins = instructorRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
 
         ins.setFirstName(instructor.getFirstName());
         ins.setLastName(instructor.getLastName());
         ins.setEmail(instructor.getEmail());
+        //tu powinno być chyba inst
         return instructorRepository.save(instructor);
     }
 
-    @DeleteMapping(path ="/{id}")
+    @DeleteMapping(path = "/{id}")
     public void deleteInstructor(@PathVariable Long id, HttpServletResponse response) {
         Instructor instructor = instructorRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
@@ -76,5 +78,23 @@ public class InstructorController {
         instructorRepository.delete(instructor);
     }
 
+    //Course OneToMany
+    @PostMapping("/{id}/course")
+    Instructor addCoursesToInstructor(@PathVariable Long id, @RequestBody Course course) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
+        instructor.addCourse(course);
+        instructorRepository.save(instructor);
+        return instructor;
+    }
 
+    //Jaka tu powinna być metoda http?
+    @DeleteMapping("/{id}/course")
+    Instructor removeCoursesToInstructor(@PathVariable Long id, @RequestBody Course course) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
+        instructor.removeCourse(course);
+        instructorRepository.save(instructor);
+        return instructor;
+    }
 }
