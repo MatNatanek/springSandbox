@@ -1,6 +1,5 @@
 package com.natanek.springSandbox.model;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,9 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+
 public class Course implements Serializable {
 
     private static final long serialVersionUID = 5630138441130098513L;
@@ -31,6 +28,7 @@ public class Course implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="instructor_id")
+    @JsonBackReference
     private Instructor instructor;
 
     @Override

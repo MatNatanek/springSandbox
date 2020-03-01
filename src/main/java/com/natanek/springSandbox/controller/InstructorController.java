@@ -5,6 +5,7 @@ import com.natanek.springSandbox.model.Course;
 import com.natanek.springSandbox.model.Instructor;
 import com.natanek.springSandbox.model.InstructorDetail;
 import com.natanek.springSandbox.repository.InstructorRepository;
+import com.natanek.springSandbox.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,12 @@ public class InstructorController {
 
     InstructorRepository instructorRepository;
 
+    InstructorService instructorService;
+
     @Autowired
-    public InstructorController(InstructorRepository instructorRepository) {
+    public InstructorController(InstructorRepository instructorRepository, InstructorService instructorService) {
         this.instructorRepository = instructorRepository;
+        this.instructorService = instructorService;
     }
 
     @GetMapping
@@ -50,11 +54,7 @@ public class InstructorController {
     //Czy musi tu być save //Chyba musi byc bo nie ma transactional -> z Transactional tez nie dziala, dlaczego?
     @PostMapping("/{id}/detail")
     Instructor saveDetailsToInstructor(@PathVariable Long id, @RequestBody InstructorDetail instructorDetail) {
-        Instructor instructor = instructorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Instructor", "id", id));
-        instructor.setInstructorDetail(instructorDetail);
-        instructorRepository.save(instructor);
-        return instructor;
+        return instructorService.addDetailsToInstructor(id, instructorDetail);
     }
 
 

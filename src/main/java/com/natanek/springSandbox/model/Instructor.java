@@ -1,9 +1,7 @@
 package com.natanek.springSandbox.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,9 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @Table(name="instructor", schema ="public" )
 public class Instructor implements Serializable {
 
@@ -30,11 +25,13 @@ public class Instructor implements Serializable {
     private String lastName;
     private String email;
 
+
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference
     @JoinColumn(name="instructor_detail_id", referencedColumnName = "id")
     private InstructorDetail instructorDetail;
 
+    @JsonManagedReference
     @OneToMany(mappedBy ="instructor", cascade = {CascadeType.ALL})
     private Set<Course> courses;
 

@@ -1,5 +1,6 @@
 package com.natanek.springSandbox.model;
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 @Entity
+
 public class InstructorDetail implements Serializable {
 
     private static final long serialVersionUID = 5668361256234984906L;
@@ -21,10 +23,9 @@ public class InstructorDetail implements Serializable {
     private String youtubeChannel;
     private String hobby;
 
-    @OneToOne(mappedBy = "instructorDetail")
     @JsonBackReference
+    @OneToOne(mappedBy = "instructorDetail")
     private Instructor instructor;
-
 
 
 }
